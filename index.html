@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GESTION DE ARRIENDO V&J</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- ESTILOS V3.7 PRO ACTUALIZADOS --- */
+        :root {
+            --primary: #0056b3; 
+            --bg-body: #f4f6f9;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; padding-bottom: 50px; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        .screen { display: none; animation: fade 0.3s; }
+        .active { display: block; }
+        @keyframes fade { from {opacity:0;} to {opacity:1;} }
+
+        #view-splash { background: var(--primary); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; position: fixed; top:0; left:0; width:100%; z-index:9999; }
+        .logo-circle { width: 120px; height: 120px; background: white; border-radius: 50%; border: 4px dashed var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 900; color: var(--primary); margin-bottom: 20px; box-shadow: 0 0 0 5px white; }
+        
+        .main-header { background: #1a1a1a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .sub-header { background: var(--primary); color: white; padding: 12px 15px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .menu-card { background: white; border-radius: 15px; padding: 20px 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .menu-card:active { transform: scale(0.98); background: #f0f0f0; }
+        .ic-blue { color: var(--primary); font-size: 2rem; margin-bottom: 10px; } 
+        .ic-red { color: var(--danger); font-size: 2rem; margin-bottom: 10px; }
+        .menu-title { font-weight: bold; font-size: 0.8rem; color: #444; text-transform: uppercase; }
+
+        .card { background: white; margin: 15px; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; margin-bottom: 10px; box-sizing: border-box; background: #fff; }
+        .label { display: block; font-size: 0.8rem; font-weight: bold; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px; }
+        .btn-primary { background: var(--primary); } 
+        .btn-success { background: var(--success); } 
+        .btn-warning { background: var(--warning); color: #333; } 
+        .btn-info { background: var(--info); }
+        .btn-danger { background: var(--danger); } 
+        .btn-neutral { background: #6c757d; }
+
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 10px; }
+        .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 5px; border: 1px solid #eee; background: white; cursor: pointer; }
+        .cal-day.today { border: 2px solid var(--primary); font-weight: bold; }
+        .cal-dot { width: 6px; height: 6px; background: var(--danger); border-radius: 50%; margin-top: 2px; }
+        
+        #search_results { position: absolute; background: white; width: 85%; z-index: 100; border: 1px solid #ddd; max-height: 200px; overflow-y: auto; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .search-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 0.95rem; }
+        
+        .table-stock { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .table-stock td { padding: 10px; border-bottom: 1px solid #eee; }
+
+        /* Icono WhatsApp Limpio */
+        .wsp-logo-btn { color: #25d366; font-size: 2.5rem; cursor: pointer; transition: transform 0.2s; }
+        .wsp-logo-btn:active { transform: scale(0.9); }
+    </style>
+</head>
+<body>
+
+    <section id="view-splash" class="active">
+        <div class="logo-circle">V&J</div>
+        <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 5px;">V&J EVENTOS</div>
+        <div style="margin-bottom: 40px; opacity: 0.8;">Logística & Gestión</div>
+        <button class="btn" style="background: white; color: var(--primary); width: 200px;" onclick="app.nav('view-home')">INGRESAR</button>
+        <div style="margin-top: 20px; font-size: 0.7rem; opacity: 0.6;">Creador: José Chávez - V&J Eventos</div>
+    </section>
+
+    <section id="view-home" class="screen">
+        <div class="main-header"><span>GESTION ARRIENDO</span><span style="background:white; color:black; padding:2px 5px; font-size:0.8rem; font-weight:bold;">V&J</span></div>
+        <div class="sub-header"><i class="fas fa-clipboard-list"></i><span>PANEL CONTROL</span></div>
+        <div class="card" style="background:var(--primary); color:white;">
+            <small>HOY: <span id="lbl_fecha_hoy"></span></small><br>
+            <b style="font-size:1.1rem;">📦 Pendientes: <span id="lbl_pendientes">0</span></b>
+        </div>
+        <div class="menu-grid">
+            <div class="menu-card" onclick="app.cliente.nuevo()"><i class="fas fa-plus-circle ic-blue"></i><span class="menu-title">NUEVO PEDIDO</span></div>
+            <div class="menu-card" onclick="app.calendario.render(); app.nav('view-calendario')"><i class="fas fa-calendar-alt ic-blue"></i><span class="menu-title">CALENDARIO</span></div>
+            <div class="menu-card" onclick="app.stock.render(); app.nav('view-stock')"><i class="fas fa-boxes ic-blue"></i><span class="menu-title">INVENTARIO</span></div>
+            <div class="menu-card" onclick="app.historial.render(); app.nav('view-historial')"><i class="fas fa-history ic-blue"></i><span class="menu-title">HISTORIAL</span></div>
+            <div class="menu-card" onclick="app.caja.render(); app.nav('view-caja')"><i class="fas fa-cash-register ic-blue"></i><span class="menu-title">CAJA CHICA</span></div>
+            <div class="menu-card" onclick="app.data.backup()"><i class="fas fa-save ic-red"></i><span class="menu-title">RESPALDO</span></div>
+        </div>
+        <div style="text-align:center; padding:10px;">
+            <i class="fab fa-whatsapp wsp-logo-btn" onclick="app.wsp.ruta()"></i>
+            <div style="font-size:0.7rem; color:#666; margin-top:5px;">RUTA DEL DÍA</div>
+        </div>
+    </section>
+
+    <section id="view-cliente" class="screen">
+        <div class="sub-header"><i class="fas fa-arrow-left" onclick="app.nav('view-home')"></i><span>FICHA CLIENTE</span></div>
+        <div class="card">
+            <label class="label">Nombre</label>
+            <input type="text" id="cli_nombre" class="input" list="lista_clientes" onchange="app.cliente.auto(this.value)" placeholder="Buscar...">
+            <datalist id="lista_clientes"></datalist>
+            
+            <label class="label">Fecha Evento</label><input type="date" id="cli_fecha" class="input">
+            <label class="label">Dirección</label><input type="text" id="cli_dir" class="input">
+            <label class="label">Valor Traslado ($)</label><input type="number" id="cli_traslado" class="input" value="0">
+            <label class="label">Teléfono</label><input type="tel" id="cli_tel" class="input" value="+569">
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                <div><label class="label">Carpeta</label><input type="text" id="cli_carpeta" class="input"></div>
+                <div><label class="label">Lazo</label><input type="text" id="cli_lazo" class="input"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
+                <button class="btn btn-warning" onclick="app.cliente.modificar()">🔓 MODIFICAR</button>
+                <button class="btn btn-info" onclick="app.cliente.soloGuardar()">💾 SOLO GUARDAR</button>
+            </div>
+            
+            <div style="text-align:center; margin:20px 0; color:#999; border-bottom:1px solid #eee;">IR A PRODUCTOS</div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <button class="btn btn-warning" onclick="app.cliente.ir('cotizacion')">📝 COTIZAR</button>
+                <button class="btn btn-success" onclick="app.cliente.ir('reserva')">✅ RESERVAR</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-items" class="screen">
+        <div class="sub-header"><i class="fas fa-arrow-left" onclick="app.nav('view-cliente')"></i><span>PRODUCTOS</span></div>
+        <div class="card" style="background:#eef2f5;">
+            <b id="res_cliente"></b><br>
+            Fecha: <b id="res_fecha" style="color:var(--primary)"></b>
+            <div id="res_badge" style="display:inline-block; padding:2px 5px; border-radius:4px; color:white; font-size:0.7rem; margin-left:10px;"></div>
+        </div>
+        <div class="card">
+            <label class="label">Buscar Producto</label>
+            <input type="text" id="prod_search" class="input" placeholder="Ej: S para Silla..." onkeyup="app.pedido.filtrar(this.value)">
+            <div id="search_results"></div>
+            
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="number" id="add_cant" class="input" placeholder="Cant" style="width:80px; margin:0;">
+                <div id="sel_prod_name" style="font-weight:bold; color:var(--primary);">Seleccione un producto...</div>
+            </div>
+            <button class="btn btn-warning" onclick="app.pedido.add()">+ AGREGAR</button>
+        </div>
+        <div class="card">
+            <table class="table-stock"><tbody id="tbl_pedido"></tbody></table>
+            <div id="box_totales" style="text-align:right; margin-top:10px; border-top:1px solid #eee; padding-top:10px;">
+                <div style="font-size:0.9rem; color:#666;">Subtotal: <span id="lbl_subtotal">$0</span></div>
+                <div style="font-size:0.9rem; color:#666;">Traslado: <span id="lbl_traslado_view">$0</span></div>
+                <div style="text-align:right; font-size:1.4rem; font-weight:bold; color:var(--primary);">Total: <span id="lbl_total">$0</span></div>
+            </div>
+        </div>
+        <div style="padding:15px;"><button class="btn btn-primary" onclick="app.pedido.finalizar()">💾 CONFIRMAR DOCUMENTO</button></div>
+    </section>
+
+    <section id="view-calendario" class="screen">
+        <div class="sub-header"><i class="fas fa-arrow-left" onclick="app.nav('view-home')"></i><span>AGENDA</span></div>
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button class="btn btn-neutral" style="width:auto; margin:0" onclick="app.calendario.nav(-1)">❮</button>
+                <b id="cal_date" style="text-transform:capitalize;"></b>
+                <button class="btn btn-neutral" style="width:auto; margin:0" onclick="app.calendario.nav(1)">❯</button>
+            </div>
+            <div id="cal_grid" class="cal-grid"></div>
+        </div>
+        <div id="cal_list" class="card" style="display:none;">
+            <b id="cal_sel_date"></b><hr>
+            <div id="cal_items"></div>
+        </div>
+    </section>
+
+    <section id="view-detalle" class="screen">
+        <div class="sub-header"><i class="fas fa-arrow-left" onclick="app.nav('view-calendario')"></i><span>DETALLE PEDIDO</span></div>
+        <div class="card">
+            <h2 id="det_cliente" style="margin:0;"></h2>
+            <small id="det_folio" style="color:#666;"></small>
+            <div style="margin-top:10px;">
+                📍 <span id="det_dir"></span><br>
+                📞 <span id="det_tel"></span><br>
+                📅 <span id="det_fecha"></span>
+            </div>
+        </div>
+        <div class="card">
+            <table class="table-stock"><tbody id="det_tabla"></tbody></table>
+            <div id="det_saldo_box" style="margin-top:10px; border-top:1px solid #eee; padding-top:10px;"></div>
+        </div>
+        <div class="card" id="det_acciones" style="text-align:center;">
+            <i class="fab fa-whatsapp wsp-logo-btn" onclick="app.detalle.wsp()"></i>
+            <div style="font-size:0.7rem; color:#666;">Enviar detalle</div>
+            <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <button id="btn_entregar" class="btn btn-info" onclick="app.detalle.estado('entregado')">🟢 ENTREGAR</button>
+                <button class="btn btn-danger" onclick="app.detalle.estado('finalizado')">🔴 RETIRAR</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-stock" class="screen">
+        <div class="sub-header"><i class="fas fa-arrow-left" onclick="app.nav('view-home')"></i><span>INVENTARIO</span></div>
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button id="btn_lock" class="btn btn-warning" style="width:auto; margin:0; font-size:0.8rem;" onclick="app.stock.lock()">🔓 MODIFICAR</button>
+                <button class="btn btn-primary" style="width:auto; margin:0; font-size:0.8rem;" onclick="app.stock.new()">+ PRODUCTO</button>
+            </div>
+            <div style="overflow-x:auto;"><table class="table-stock"><thead><tr><th>Prod</th><th>Stock</th><th>$$</th><th></th></tr></thead><tbody id="tbl_stock"></tbody></table></div>
+        </div>
+    </section>
+
+    <section id="view-historial" class="screen">
+        <div class="sub-header"><i class="fas fa-arrow-left" onclick="app.nav('view-home')"></i><span>HISTORIAL</span></div>
+        <div id="hist_list" style="padding:15px;"></div>
+    </section>
+
+    <section id="view-caja" class="screen">
+        <div class="sub-header"><i class="fas fa-arrow-left" onclick="app.nav('view-home')"></i><span>CAJA CHICA</span></div>
+        <div class="card" style="background:var(--primary); color:white; text-align:center;">
+            <small>SALDO</small><div style="font-size:2rem; font-weight:bold;" id="caja_saldo">$0</div>
+        </div>
+        <div class="card">
+            <input type="text" id="caja_desc" class="input" placeholder="Detalle...">
+            <input type="number" id="caja_monto" class="input" placeholder="Monto...">
+            <button class="btn btn-danger" onclick="app.caja.add()">REGISTRAR GASTO</button>
+        </div>
+        <div id="caja_list" style="padding:15px;"></div>
+    </section>
+
+    <script>
+        // Mantenemos tu listado de precios y DB original
+        const PRODS = [
+            {id:1,nom:"Silla",val:700,stk:1000},{id:2,nom:"Funda",val:500,stk:1000},{id:3,nom:"Funda negra",val:800,stk:1000},
+            {id:4,nom:"Lazo",val:250,stk:1000},{id:5,nom:"Mesa rect(8p)",val:2500,stk:1000},{id:6,nom:"Mesa red(10p)",val:3000,stk:1000},
+            {id:7,nom:"Mantel rect",val:2500,stk:1000},{id:8,nom:"Mantel negro",val:3000,stk:1000},{id:9,nom:"Mantel red",val:3000,stk:1000},
+            {id:10,nom:"Carpeta",val:1000,stk:1000},{id:11,nom:"Servilleta blanca",val:250,stk:1000},{id:12,nom:"Servilleta color",val:300,stk:1000},
+            {id:13,nom:"Servilletero",val:300,stk:1000},{id:14,nom:"Plato ppal",val:150,stk:1000},{id:15,nom:"Plato ent",val:100,stk:1000},
+            {id:16,nom:"Plato pan",val:100,stk:1000},{id:17,nom:"Copa postre",val:100,stk:1000},{id:18,nom:"Taza té",val:300,stk:1000},
+            {id:19,nom:"Taza consome",val:150,stk:1000},{id:20,nom:"Pocillo",val:100,stk:1000},{id:21,nom:"Cuchillo",val:100,stk:1000},
+            {id:22,nom:"Tenedor",val:100,stk:1000},{id:23,nom:"Cuchara postre",val:100,stk:1000},{id:24,nom:"Cuchara consome",val:100,stk:1000},
+            {id:25,nom:"Cuchara ens",val:250,stk:1000},{id:26,nom:"Tenaza",val:250,stk:1000},{id:27,nom:"Copa vino",val:100,stk:1000},
+            {id:28,nom:"Copa champagne",val:100,stk:1000},{id:29,nom:"Vaso largo",val:100,stk:1000},{id:30,nom:"Vaso wiski",val:130,stk:1000},
+            {id:31,nom:"Ensaladera",val:600,stk:1000},{id:32,nom:"Alcuza",val:1000,stk:1000},{id:33,nom:"Panera",val:350,stk:1000},
+            {id:34,nom:"Jarro",val:400,stk:1000},{id:35,nom:"Hielera",val:400,stk:1000},{id:36,nom:"Azucarero",val:300,stk:1000},
+            {id:37,nom:"Salero",val:100,stk:1000},{id:38,nom:"Cenicero",val:100,stk:1000},{id:39,nom:"Bandeja",val:1000,stk:1000}
+        ];
+
+        const DB = {
+            init:()=>{
+                if(!localStorage.getItem('vj_prod')) localStorage.setItem('vj_prod',JSON.stringify(PRODS));
+                if(!localStorage.getItem('vj_res')) localStorage.setItem('vj_res','[]');
+                if(!localStorage.getItem('vj_cli')) localStorage.setItem('vj_cli','[]');
+                if(!localStorage.getItem('vj_caja')) localStorage.setItem('vj_caja','[]');
+                if(!localStorage.getItem('vj_fol')) localStorage.setItem('vj_fol',JSON.stringify({c:100}));
+            },
+            get:(k)=>JSON.parse(localStorage.getItem(k)||'[]'),
+            set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+        };
+
+        const app = {
+            tmp:{it:[]}, locked:true, sel:null, currentViewItem:null,
+            init:()=>{
+                DB.init();
+                const h = new Date().toISOString().split('T')[0];
+                document.getElementById('lbl_fecha_hoy').innerText = h;
+                app.dash();
+            },
+            nav:(id)=>{
+                if(id==='view-home') document.getElementById('view-splash').style.display='none';
+                document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+                if(id!=='view-splash') document.getElementById(id).classList.add('active');
+                window.scrollTo(0,0);
+            },
+            dash:()=>{
+                const h = new Date().toISOString().split('T')[0];
+                const r = DB.get('vj_res').filter(x=>x.fe===h && x.est!=='finalizado' && x.tipo==='reserva');
+                document.getElementById('lbl_pendientes').innerText = r.length;
+            },
+            cliente: {
+                nuevo:()=>{
+                    app.tmp={it:[], pagado:0};
+                    ['cli_nombre','cli_fecha','cli_dir','cli_tel','cli_carpeta','cli_lazo','cli_traslado'].forEach(i=>{
+                        const e=document.getElementById(i); if(e) {e.value=''; e.disabled=false;}
+                    });
+                    document.getElementById('cli_tel').value='+569';
+                    document.getElementById('cli_traslado').value='0';
+                    const dl=document.getElementById('lista_clientes');
+                    dl.innerHTML = DB.get('vj_cli').map(c=>`<option value="${c.n}">`).join('');
+                    app.nav('view-cliente');
+                },
+                auto:(v)=>{
+                    const c = DB.get('vj_cli').find(x=>x.n===v);
+                    if(c){
+                        document.getElementById('cli_dir').value=c.d;
+                        document.getElementById('cli_tel').value=c.t;
+                        ['cli_dir','cli_tel'].forEach(i=>document.getElementById(i).disabled=true);
+                    }
+                },
+                modificar:()=>{
+                    ['cli_dir','cli_tel','cli_fecha','cli_nombre','cli_carpeta','cli_lazo','cli_traslado'].forEach(i=>document.getElementById(i).disabled=false);
+                },
+                soloGuardar:()=>{
+                    const n=document.getElementById('cli_nombre').value, d=document.getElementById('cli_dir').value, t=document.getElementById('cli_tel').value;
+                    if(!n) return alert("Falta nombre");
+                    let cl = DB.get('vj_cli');
+                    const idx = cl.findIndex(x=>x.n===n);
+                    if(idx>=0) cl[idx]={n,d,t}; else cl.push({n,d,t});
+                    DB.set('vj_cli',cl); alert("Cliente guardado"); app.nav('view-home');
+                },
+                ir:(tipo)=>{
+                    app.tmp.n=document.getElementById('cli_nombre').value;
+                    app.tmp.fe=document.getElementById('cli_fecha').value;
+                    app.tmp.d=document.getElementById('cli_dir').value;
+                    app.tmp.t=document.getElementById('cli_tel').value;
+                    app.tmp.ca=document.getElementById('cli_carpeta').value;
+                    app.tmp.la=document.getElementById('cli_lazo').value;
+                    app.tmp.tr=parseInt(document.getElementById('cli_traslado').value) || 0;
+                    app.tmp.tipo=tipo;
+                    app.tmp.pagado=0;
+                    if(!app.tmp.n || !app.tmp.fe) return alert("Falta Nombre o Fecha");
+                    
+                    document.getElementById('res_cliente').innerText=app.tmp.n;
+                    document.getElementById('res_fecha').innerText=app.tmp.fe;
+                    const b = document.getElementById('res_badge');
+                    b.innerText = tipo==='cotizacion' ? 'COTIZACION' : 'RESERVA';
+                    b.style.background = tipo==='cotizacion' ? 'var(--warning)' : 'var(--success)';
+                    app.pedido.render();
+                    app.nav('view-items');
+                }
+            },
+            pedido:{
+                filtrar:(t)=>{
+                    const d=document.getElementById('search_results'); d.innerHTML='';
+                    if(t.length<1) return d.style.display='none';
+                    const r=DB.get('vj_prod').filter(x=>x.nom.toLowerCase().includes(t.toLowerCase()));
+                    if(r.length){ 
+                        d.style.display='block'; 
+                        r.forEach(p=> {
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'search-item';
+                            itemDiv.innerHTML = `${p.nom} ($${p.val})`;
+                            itemDiv.onclick = () => app.pedido.pick(p.id, p.nom, p.val);
+                            d.appendChild(itemDiv);
+                        });
+                    } else d.style.display='none';
+                },
+                pick:(id,n,v)=>{
+                    app.sel={id,n,v}; document.getElementById('sel_prod_name').innerText=n;
+                    document.getElementById('prod_search').value=''; 
+                    document.getElementById('search_results').style.display='none';
+                    document.getElementById('add_cant').focus();
+                },
+                add:()=>{
+                    if(!app.sel) return alert("Seleccione un producto");
+                    const c=parseInt(document.getElementById('add_cant').value); if(!c) return;
+                    app.tmp.it.push({...app.sel, c}); app.sel=null;
+                    document.getElementById('sel_prod_name').innerText='Seleccione un producto...'; 
+                    document.getElementById('add_cant').value='';
+                    app.pedido.render();
+                },
+                render:()=>{
+                    const t=document.getElementById('tbl_pedido'); t.innerHTML=''; let sub=0;
+                    app.tmp.it.forEach((i,x)=>{
+                        sub+=i.val*i.c;
+                        t.innerHTML+=`<tr><td>${i.c}</td><td>${i.n}</td><td>$${i.val*i.c}</td><td><i class="fas fa-times" style="color:red" onclick="app.tmp.it.splice(${x},1);app.pedido.render()"></i></td></tr>`;
+                    });
+                    const total = sub + app.tmp.tr;
+                    document.getElementById('lbl_subtotal').innerText='$'+sub;
+                    document.getElementById('lbl_traslado_view').innerText='$'+app.tmp.tr;
+                    document.getElementById('lbl_total').innerText='$'+total;
+                },
+                finalizar:()=>{
+                    if(!app.tmp.it.length) return alert("No hay productos");
+                    let fol = app.tmp.tipo==='cotizacion' ? "C-"+(DB.get('vj_fol').c) : "R-"+Date.now().toString().slice(-6);
+                    if(app.tmp.tipo==='cotizacion'){
+                        const f=DB.get('vj_fol'); f.c++; DB.set('vj_fol',f);
+                    }
+                    app.tmp.fol=fol; app.tmp.est='pendiente';
+                    const r=DB.get('vj_res'); r.push(app.tmp); DB.set('vj_res',r);
+                    
+                    let m=`*${app.tmp.tipo.toUpperCase()} ${fol}*\nCli: ${app.tmp.n}\nFe: ${app.tmp.fe}\nDir: ${app.tmp.d}\n\n`;
+                    app.tmp.it.forEach(i=>m+=`${i.c} ${i.n}\n`); 
+                    const totalDoc = app.tmp.it.reduce((a,b)=>a+(b.val*b.c),0) + app.tmp.tr;
+                    m+=`\nTraslado: $${app.tmp.tr}\nTotal: $${totalDoc}`;
+                    m+="\n\nLe enviamos la cotización según lo solicitado. Por favor, revise los detalles. Quedo atento a cualquier comentario.";
+                    
+                    alert("Documento guardado con éxito.");
+                    if(confirm("¿Deseas enviar por WhatsApp ahora?")){
+                        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(m)}`);
+                    }
+                    app.init(); app.nav('view-home');
+                }
+            },
+            calendario:{
+                ref:new Date(),
+                nav:(n)=>{app.calendario.ref.setMonth(app.calendario.ref.getMonth()+n); app.calendario.render();},
+                render:()=>{
+                    const y=app.calendario.ref.getFullYear(), m=app.calendario.ref.getMonth();
+                    document.getElementById('cal_date').innerText=new Date(y,m,1).toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+                    const days=new Date(y,m+1,0).getDate(), first=new Date(y,m,1).getDay();
+                    const g=document.getElementById('cal_grid'); g.innerHTML='';
+                    const adjustFirst = first === 0 ? 6 : first - 1;
+                    for(let i=0;i<adjustFirst;i++)g.innerHTML+='<div></div>';
+                    for(let d=1;d<=days;d++){
+                        const f=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                        const ev=DB.get('vj_res').some(x=>x.fe===f && x.est!=='finalizado');
+                        g.innerHTML+=`<div class="cal-day" onclick="app.calendario.ver('${f}')">${d}${ev?'<div class="cal-dot"></div>':''}</div>`;
+                    }
+                },
+                ver:(f)=>{
+                    document.getElementById('cal_list').style.display='block';
+                    document.getElementById('cal_sel_date').innerText=f;
+                    const l=document.getElementById('cal_items'); l.innerHTML='';
+                    const rs=DB.get('vj_res').filter(x=>x.fe===f);
+                    if(!rs.length) l.innerHTML='<div style="padding:10px">Nada hoy</div>';
+                    rs.forEach(r=>{
+                        let st=r.est==='entregado'?'status-entregado':(r.est==='finalizado'?'status-finalizado':'status-pendiente');
+                        l.innerHTML+=`<div class="pedido-item ${st}" onclick="app.detalle.open('${r.fol}')"><b>${r.n}</b> (${r.tipo})<br>${r.d}</div>`;
+                    });
+                }
+            },
+            detalle:{
+                open:(fol)=>{
+                    const r=DB.get('vj_res').find(x=>x.fol===fol); app.currentViewItem=r;
+                    document.getElementById('det_cliente').innerText=r.n;
+                    document.getElementById('det_folio').innerText=r.fol;
+                    document.getElementById('det_dir').innerText=r.d;
+                    document.getElementById('det_tel').innerText=r.t;
+                    document.getElementById('det_fecha').innerText=r.fe;
+                    
+                    const t=document.getElementById('det_tabla'); t.innerHTML=''; let sub=0;
+                    r.it.forEach(i=>{
+                        sub+=i.val*i.c;
+                        t.innerHTML+=`<tr><td>${i.c}</td><td>${i.n}</td><td>$${i.val*i.c}</td></tr>`;
+                    });
+                    t.innerHTML+=`<tr><td>-</td><td>TRASLADO</td><td>$${r.tr||0}</td></tr>`;
+
+                    const tot = sub + (r.tr || 0);
+                    const pagado = r.pagado || 0;
+                    const saldo = tot - pagado;
+                    const sBox = document.getElementById('det_saldo_box');
+                    sBox.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>TOTAL:</span><span>$${tot}</span></div>
+                        <div style="display:flex; justify-content:space-between; margin-top:5px; color:var(--success);">
+                            <span>PAGADO:</span>
+                            <span>$ <input type="number" value="${pagado}" onchange="app.detalle.setPago('${r.fol}', this.value)" style="width:70px; font-weight:bold; border:1px solid #ddd;"></span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:5px; color:var(--danger); font-size:1.1rem; border-top:1px dashed #ccc; padding-top:5px;">
+                            <span>SALDO:</span><span>$${saldo}</span>
+                        </div>
+                    `;
+                    app.nav('view-detalle');
+                },
+                setPago:(fol, val)=>{
+                    const r=DB.get('vj_res');
+                    const i=r.find(x=>x.fol===fol);
+                    i.pagado = parseInt(val) || 0;
+                    DB.set('vj_res',r);
+                    app.detalle.open(fol);
+                },
+                wsp:()=>{
+                    const r=app.currentViewItem;
+                    let m=`*PEDIDO ${r.fol}*\nCli: ${r.n}\nDir: ${r.d}\n\n`;
+                    r.it.forEach(i=>m+=`${i.c} ${i.n}\n`);
+                    const tot = r.it.reduce((a,b)=>a+(b.val*b.c),0) + (r.tr||0);
+                    m+=`\nTraslado: $${r.tr||0}\nTOTAL: $${tot}\nPAGADO: $${r.pagado||0}\nSALDO: $${tot-(r.pagado||0)}`;
+                    m+="\n\nLe enviamos el detalle de su pedido. Quedamos atentos.";
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(m)}`);
+                },
+                estado:(est)=>{
+                    const r=DB.get('vj_res');
+                    const i=r.find(x=>x.fol===app.currentViewItem.fol);
+                    if(est==='finalizado' && !confirm("¿Cerrar y liberar stock?")) return;
+                    i.est=est; DB.set('vj_res',r);
+                    alert("Estado: "+est.toUpperCase());
+                    app.nav('view-calendario'); app.calendario.ver(i.fe); app.dash();
+                }
+            },
+            stock:{
+                render:()=>{
+                    const b=document.getElementById('tbl_stock'); b.innerHTML='';
+                    DB.get('vj_prod').forEach(p=>{
+                        const st=app.locked?'disabled style="background:#f9f9f9;border:0"':'';
+                        b.innerHTML+=`<tr><td><input value="${p.nom}" ${st} onchange="app.stock.u(${p.id},'nom',this.value)"></td>
+                        <td><input type="number" value="${p.stk}" ${st} style="width:50px" onchange="app.stock.u(${p.id},'stk',this.value)"></td>
+                        <td><input type="number" value="${p.val}" ${st} style="width:50px" onchange="app.stock.u(${p.id},'val',this.value)"></td>
+                        <td>${!app.locked?`<i class="fas fa-trash" style="color:red" onclick="app.stock.d(${p.id})"></i>`:''}</td></tr>`;
+                    });
+                    document.getElementById('btn_lock').innerText=app.locked?'🔓 MODIFICAR':'🔒 BLOQUEAR';
+                },
+                lock:()=>{app.locked=!app.locked; app.stock.render();},
+                u:(id,k,v)=>{const p=DB.get('vj_prod'); p.find(x=>x.id===id)[k]=(k==='nom'?v:parseInt(v)); DB.set('vj_prod',p);},
+                d:(id)=>{if(confirm("Borrar?")){DB.set('vj_prod',DB.get('vj_prod').filter(x=>x.id!==id));app.stock.render();}},
+                new:()=>{
+                    if(app.locked) return alert("Habilite el botón Modificar");
+                    const n=prompt("Nombre del producto"); if(n){const p=DB.get('vj_prod'); p.push({id:Date.now(),nom:n,val:0,stk:0}); DB.set('vj_prod',p); app.stock.render();}
+                }
+            },
+            historial:{
+                render:()=>{
+                    const l=document.getElementById('hist_list'); l.innerHTML='';
+                    const res = [...DB.get('vj_res')].reverse();
+                    res.forEach(r=>{
+                        let st=r.est==='entregado'?'status-entregado':(r.est==='finalizado'?'status-finalizado':'status-pendiente');
+                        l.innerHTML+=`<div class="pedido-item ${st}" onclick="app.detalle.open('${r.fol}')"><b>${r.n}</b><br>${r.fe} | ${r.fol}</div>`;
+                    });
+                }
+            },
+            caja:{
+                render:()=>{
+                    const c=DB.get('vj_caja'); document.getElementById('caja_saldo').innerText='$'+c.reduce((a,b)=>a+b.m,0);
+                    document.getElementById('caja_list').innerHTML=c.slice().reverse().map(x=>`<div class="card" style="padding:10px">${x.d} <b style="float:right;color:red">$${x.m}</b></div>`).join('');
+                },
+                add:()=>{
+                    const d=document.getElementById('caja_desc').value, m=parseInt(document.getElementById('caja_monto').value);
+                    if(d&&m){const c=DB.get('vj_caja'); c.push({d,m:-m}); DB.set('vj_caja',c); app.caja.render(); 
+                    document.getElementById('caja_desc').value='';document.getElementById('caja_monto').value='';}
+                }
+            },
+            wsp:{ ruta:()=>{
+                const h=new Date().toISOString().split('T')[0];
+                const r=DB.get('vj_res').filter(x=>x.fe===h && x.est!=='finalizado' && x.tipo==='reserva');
+                if(!r.length) return alert("Nada agendado para hoy");
+                let m="*RUTA DE HOY - V&J EVENTOS*\n\n"; r.forEach(x=>m+=`📍 ${x.n}\nDirección: ${x.d}\nTel: ${x.t}\n\n`);
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(m)}`);
+            }},
+            data:{ backup:()=>{
+                const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(localStorage)],{type:'application/json'}));
+                a.download='vj_backup.json'; a.click();
+            }}
+        };
+        window.onload=app.init;
+    </script>
+</body>
+</html>
